@@ -1,0 +1,20 @@
+import React from "react";
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-100 text-gray-800 p-8">
+      <header className="text-3xl font-bold mb-6">
+        📅 My React Calendar App
+      </header>
+
+      <main>
+        <div className="bg-white rounded-2xl shadow p-6">
+          <p className="text-lg">Welcome! Start building your calendar here.</p>
+          <h>Hello World!!</h>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;
