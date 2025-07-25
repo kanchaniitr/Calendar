@@ -1,18 +1,14 @@
 package com.example.Calendar.externalApi;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
+@Getter
+@Setter
 public class HolidayResponse {
     private HolidayListResponse response;
-
-    public HolidayListResponse getResponse() {
-        return response;
-    }
-
-    public void setResponse(HolidayListResponse response) {
-        this.response = response;
-    }
 }

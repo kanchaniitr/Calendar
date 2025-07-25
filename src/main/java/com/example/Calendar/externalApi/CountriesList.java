@@ -1,30 +1,18 @@
 package com.example.Calendar.externalApi;
 
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 @NoArgsConstructor
+@Getter
+@Setter
 public class CountriesList {
     String url;
     private List<CountryNameWithCode> countries;
-
-    public List<CountryNameWithCode> getCountries() {
-        return countries;
-    }
-
-    public void setCountries(List<CountryNameWithCode> countries) {
-        this.countries = countries;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 }
