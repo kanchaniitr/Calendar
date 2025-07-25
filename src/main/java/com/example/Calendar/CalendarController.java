@@ -1,19 +1,22 @@
 package com.example.Calendar;
 
-import com.example.Calendar.dto.MonthCalendarDTO;
-import com.example.Calendar.dto.QuarterOfYear;
-import com.example.Calendar.externalApi.CountryNameWithCode;
+import com.example.Calendar.dto.CountriesDTO;
+import com.example.Calendar.dto.HolidaysDTO;
 import com.example.Calendar.externalApi.HolidayWithName;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Month;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class CalendarController {
 
     @Autowired
@@ -24,51 +27,35 @@ public class CalendarController {
         return "index.js";
     }
 
-    @GetMapping("/calendar/month")
-    public MonthCalendarDTO getMonthCalendar(@PathParam("country") String country,
-                                             @PathParam("month") Month month,
-                                             @PathParam("year") int year) {
-        MonthCalendarDTO monthCalendarDTO = new MonthCalendarDTO(year, month);
-        Map<Integer, String> holidayMap = getHolidayMap(country, year, month);
-        monthCalendarDTO.updateHoliday(holidayMap);
-        return monthCalendarDTO;
-    }
-
-    @GetMapping("/calendar/quarter")
-    public List<MonthCalendarDTO> getQuarterCalendar(@PathParam("country") String country,
-                                                     @PathParam("quarter") QuarterOfYear quarter,
-                                                     @PathParam("year") int year) {
-        List<MonthCalendarDTO> quarterCalenderDTO = new ArrayList<>();
-        for (Month month : quarter.getMonthList()) {
-            MonthCalendarDTO monthCalendarDTO = new MonthCalendarDTO(year, month);
-            Map<Integer, String> holidayMap = getHolidayMap(country, year, month);
-            monthCalendarDTO.updateHoliday(holidayMap);
-            quarterCalenderDTO.add(monthCalendarDTO);
-        }
-        return quarterCalenderDTO;
+    @GetMapping("/holidays")
+    public List<HolidaysDTO> getHolidays(@PathParam("countryCode") String countryCode,
+                                         @PathParam("startDate") String startDate,
+                                         @PathParam("endDate") String endDate) {
+        List<HolidaysDTO> holidays = new ArrayList<>();
+        if (ObjectUtils.isEmpty(countryCode) || ObjectUtils.isEmpty(startDate) || ObjectUtils.isEmpty(endDate))
+            return holidays;
+        holidays = getHolidaysList(countryCode, startDate, endDate);
+        return holidays;
     }
 
     @GetMapping("/countries")
-    public List<CountryNameWithCode> getAllCountries() {
-        return calendarService.getAllCountries();
+    public List<CountriesDTO> getAllCountries() {
+        return calendarService.getAllCountries().stream()
+                .map(dto -> new CountriesDTO(dto.getName(), dto.getCode()))
+                .collect(Collectors.toList());
     }
 
-    @GetMapping("/months")
-    public List<Month> getAllMonths() {
-        return Arrays.asList(Month.values());
-    }
-
-    @GetMapping("/quarters")
-    public List<QuarterOfYear> getAllQuarters() {
-        return Arrays.asList(QuarterOfYear.values());
-    }
-
-    public Map<Integer, String> getHolidayMap(String countryCode, int year, Month month) {
-        List<HolidayWithName> holidays = calendarService.getHolidaysList(countryCode, year, month);
-        Map<Integer, String> holidayMap = new HashMap<>();
-        holidays.forEach(holidayWithName -> {
-            holidayMap.put(holidayWithName.getDate().getDatetime().getDay(), holidayWithName.getName());
-        });
-        return holidayMap;
+    public List<HolidaysDTO> getHolidaysList(String countryCode, String sDate, String eDate) {
+        int year = Integer.parseInt(sDate.substring(0, 4));
+        int sMonth = Integer.parseInt(sDate.substring(4, 6));
+        int eMonth = Integer.parseInt(eDate.substring(4, 6));
+        List<HolidaysDTO> toReturn = new ArrayList<>();
+        List<HolidayWithName> holidays = calendarService.getHolidaysList(countryCode, year);
+        for (HolidayWithName hDay : holidays) {
+            int hMonth = hDay.getDate().getDatetime().getMonth();
+            if (hMonth >= sMonth && hMonth <= eMonth)
+                toReturn.add(new HolidaysDTO(hDay.getDate().toString(), hDay.getName()));
+        }
+        return toReturn;
     }
 }

@@ -13,13 +13,6 @@ public class CalendarApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CalendarApplication.class, args);
-		CalendarService service = new CalendarService();
-
-		List<CountryNameWithCode> countries = service.getAllCountries();
-		System.out.println(countries);
-
-		List<HolidayWithName> holidays = service.getHolidaysList("IN", 2025, Month.OCTOBER);
-		System.out.println(holidays);
 	}
 
 }

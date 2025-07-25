@@ -29,8 +29,8 @@ public class CalendarService {
         return Collections.emptyList();
     }
 
-    public List<HolidayWithName> getHolidaysList(String country, int year, Month month) {
-        String url = String.format("%s&country=%s&year=%d&month=%d", holidaysURI, country, year, month.getValue());
+    public List<HolidayWithName> getHolidaysList(String countryCode, int year) {
+        String url = String.format("%s&country=%s&year=%d", holidaysURI, countryCode, year);
         HolidayResponse holidays = restTemplate.getForObject(url, HolidayResponse.class);
 
         return holidays.getResponse().getHolidays();

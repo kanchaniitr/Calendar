@@ -1,39 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
-function Dropdown() {
-  const [selected, setSelected] = useState("Select an option");
-  const [open, setOpen] = useState(false);
-  const options = ["Today", "This Week", "This Month", "All Time"];
+function DynamicDropdownFromAPI() {
+  const [selectedValue, setSelectedValue] = useState('');
+  const [dataOptions, setDataOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Replace with your actual API endpoint
+        const response = await fetch('http://localhost:8080/countries');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setDataOptions(data); // Assuming data is an array of objects with label/value
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this runs once on mount
+
+  const handleDropdownChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  if (loading) return <div>Loading options...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="relative inline-block text-left">
-      <div>
-        <button
-          onClick={() => setOpen(!open)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md shadow"
-        >
-          {selected}
-        </button>
-      </div>
-
-      {open && (
-        <div className="absolute z-10 mt-2 w-48 bg-white border rounded-md shadow">
-          {options.map((option) => (
-            <div
-              key={option}
-              onClick={() => {
-                setSelected(option);
-                setOpen(false);
-              }}
-              className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
-            >
-              {option}
-            </div>
-          ))}
-        </div>
-      )}
+    <div>
+      <label htmlFor="api-select">Select an item:</label>
+      <select id="api-select" value={selectedValue} onChange={handleDropdownChange}>
+        <option value="">-- Please choose an item --</option>
+        {dataOptions.map((item) => (
+          <option key={item.value} value={item.value}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+      {selectedValue && <p>You selected: {selectedValue}</p>}
     </div>
   );
 }
 
-export default Dropdown;
+export default DynamicDropdownFromAPI;

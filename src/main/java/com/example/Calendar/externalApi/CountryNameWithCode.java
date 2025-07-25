@@ -1,11 +1,13 @@
 package com.example.Calendar.externalApi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
+@AllArgsConstructor
 public class CountryNameWithCode {
 
     @JsonProperty(value = "country_name")

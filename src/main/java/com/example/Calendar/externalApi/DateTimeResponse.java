@@ -35,4 +35,8 @@ public class DateTimeResponse {
     public void setDay(int day) {
         this.day = day;
     }
+
+    public String toString() {
+        return String.format("%04d%02d%02d", year, month, day);
+    }
 }
