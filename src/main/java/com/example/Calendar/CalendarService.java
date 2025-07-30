@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class CalendarService {
 
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final String baseURI = "https://calendarific.com/api/v2";
     private static final String API_KEY = "NdF0PJ78ygeyjqTX7k318lZFSkYWlCGZ";
     private static final String countriesURI = baseURI + "/countries?api_key=" + API_KEY;
@@ -60,6 +64,11 @@ public class CalendarService {
             if (hMonth >= sMonth && hMonth <= eMonth)
                 toReturn.add(new HolidaysDTO(hDay.getDate().toString(), hDay.getName()));
         }
-        return toReturn;
+        return toReturn.stream().filter(dto -> !isWeekend(dto)).collect(Collectors.toList());
+    }
+
+    private boolean isWeekend(HolidaysDTO dto) {
+        LocalDate date = LocalDate.parse(dto.getDate(), dateFormatter);
+        return date.getDayOfWeek().equals(DayOfWeek.SATURDAY) || date.getDayOfWeek().equals(DayOfWeek.SUNDAY);
     }
 }
