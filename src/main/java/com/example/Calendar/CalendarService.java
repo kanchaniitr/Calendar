@@ -19,7 +19,7 @@ public class CalendarService {
     private static final String holidaysURI = baseURI + "/holidays?api_key=" + API_KEY;
 
     @Autowired
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
     public List<CountryNameWithCode> getAllCountries() {
         CountriesResponse countryResponse = restTemplate.getForObject(countriesURI, CountriesResponse.class);
